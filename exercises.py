@@ -67,7 +67,12 @@ class Exercises:   # template de classe, a modif
     def create_new_window(self):
         self._restart = True
         self.window.destroy()
-
+    # pour afficher l'ensemble des exos d'un pattern, il faut faire ca pour exphoto et pour exname : je n'ai pas tester la fonction
+    def show_exercises(self):
+        exo = ""
+        for i in range(len(pattern_liste)):
+            for j in range(len(pattern_liste[i])):   
+                exo = pattern_liste[i][j]
 i = 0
 while i < len(pattern_liste):
     for j in range(len(pattern_liste[i])):
@@ -81,3 +86,4 @@ while i < len(pattern_liste):
         continue
     else:
         break
+
