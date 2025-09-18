@@ -15,21 +15,24 @@ tricep_iso = [("Pushdown", "images/jpg2png-2/jpg2png-3/pushdown.png"), ("Tricep 
 delt_iso = [("Lateral raises", "images/jpg2png-2/jpg2png-3/lateral raises.png"), ("Front raise", "images/jpg2png-2/front raises.png"), ("Rear delt fly", "images/jpg2png-2/jpg2png-3/rear delt fly.png")]
 
 #liste de pattern
-pattern_liste = [press_horizontale, press_verticale, tirage_horizontal, tirage_vertical,
-                 squat_pattern, hinge_pattern, spine_flexion, quad_iso, ham_iso,
-                 bicep_iso, tricep_iso, delt_iso]
+pattern_liste = [("Press horizontale", press_horizontale), ("press verticale", press_verticale), ("tirage verticale", tirage_horizontal), ("tirage vertical", tirage_vertical),
+                 ("squat pattern", squat_pattern),("hinge pattern", hinge_pattern), ("spine flexion", spine_flexion), ("quad iso", quad_iso), ("hamstring isolation", ham_iso),
+                 ("bicep isolation", bicep_iso), ("tricep isolation", tricep_iso), ("delt isolation", delt_iso)]
 
 # fonctions
 def choose_exercise(i, j):
-    name, path = pattern_liste[i][j][0], pattern_liste[i][j][1]
-    pattern_liste[i][j] = (name, path, 1)
+    # i = index du pattern, j = index de l'exercice dans ce pattern
+    nom_pattern, exercises = pattern_liste[i]
+    name, path = exercises[j][0], exercises[j][1]
+    exercises[j] = (name, path, 1) # rajoute un 1 au tuple si il est choisit
 
 class Exercises:
     def __init__(self, i):
         self.i = i
         self.chosen_count = 0
         self.window = tk.Tk()
-        self.window.title(f"Pattern {i+1} — choisissez 2 exercices")
+        nom_pattern, exercises = pattern_liste[i]
+        self.window.title(f"{nom_pattern}- choisissez 2 exercices")
 
         self.info = tk.Label(self.window, text="Sélections : 0/2", font=("Arial", 14))
         self.info.pack(pady=8)
@@ -37,9 +40,9 @@ class Exercises:
         self._imgs = []  # garder les images en mémoire
 
         # un bouton par exercice
-        for j in range(len(pattern_liste[i])):
-            name = pattern_liste[i][j][0]
-            path = pattern_liste[i][j][1]
+        for j in range(len(exercises)):
+            name = exercises[j][0]
+            path = exercises[j][1]
 
             # image si disponible
             try:
@@ -61,16 +64,10 @@ class Exercises:
         tk.Button(self.window, text="Fermer", command=self.window.destroy).pack(pady=10)
 
     def on_click(self, j):
-        # choisir l'exercice, désactiver le bouton, compter
+        # choisir l'exercice, update le counter
         choose_exercise(self.i, j)
-
-        children = self.window.winfo_children()
-    
-        for w in children:
-            if isinstance(w, tk.Button) and w["text"] == pattern_liste[self.i][j][0]:
-                w.config(state="disabled")
-
         self.chosen_count += 1
+        # config permet de changer le label existant
         self.info.config(text=f"Sélections : {self.chosen_count}/2")
 
         # quand 2 choisis -> fermer la fenêtre => on passe au pattern suivant

@@ -32,36 +32,36 @@ class Muscle:
     def __init__(self, muscle_name, muscle_photo_path):
         self._restart = False
         self.window = tk.Tk()
-        self.window.state("zoomed")
-        self.window.title("MyFitnessPal de l'entrainement")
+        """self.window.state("zoomed")"""
+        self.window.title(muscle_name)
         
         self.muscle_name = muscle_name
 
         self.muscle_photo = tk.PhotoImage(file=muscle_photo_path)
 
-        self.label_b_1 = tk.Label(self.window, text = muscle_name, font=('Arial', 25))
-        self.label_b_1.pack(padx=10)
+        """self.label_b_1 = tk.Label(self.window, text = muscle_name, font=('Arial', 25))
+        self.label_b_1.pack()"""
 
-        self.label_b_2 = tk.Label(self.window, image= self.muscle_photo)
-        self.label_b_2.place(anchor="nw")
+        self.label_b_2 = tk.Label(self.window, image= self.muscle_photo).pack(fill="both")
+        """self.label_b_2.place(anchor="nw")"""
 
         self.button_maintenance = tk.Button(self.window, text= "Maintenance", font=('Arial', 50), fg='green', command= lambda: (update_maintenance(), self.create_new_window()))
-        self.button_maintenance.pack(padx=0, pady=100)
+        self.button_maintenance.pack(padx=6, pady=6, fill="x")
 
         self.button_normal_growth = tk.Button(self.window, text="Normal Growth", font=('Arial', 50), fg='blue', command=lambda: (update_normal_growth(), self.create_new_window()))
-        self.button_normal_growth.pack(padx=0, pady=100)
+        self.button_normal_growth.pack(padx=6, pady=6, fill="x")
 
         self.button_prioritised_growth = tk.Button(self.window, text="Prioritised Growth", font=('Arial', 50), fg='red', command=lambda: (update_prioritised_growth(), self.create_new_window()))
-        self.button_prioritised_growth.pack(padx=0, pady=100)
+        self.button_prioritised_growth.pack(padx=6, pady=6, fill="x")
         
-        self.label_maintenace = tk.Label(self.window, text=maintenance)      #bien placer les labels counters (avec une box?)
+        """self.label_maintenace = tk.Label(self.window, text=maintenance)      #bien placer les labels counters (avec une box?)
         self.label_maintenace.pack()
 
         self.label_normal_growth = tk.Label(self.window, text=normal_growth)
         self.label_normal_growth.pack()
 
         self.label_prioritised_growth = tk.Label(self.window, text=prioritised_growth)
-        self.label_prioritised_growth.pack()
+        self.label_prioritised_growth.pack()"""
     def create_new_window(self):
         self._restart = True
         self.window.destroy()
