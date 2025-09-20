@@ -31,6 +31,11 @@ class Exercises:
         self.i = i
         self.chosen_count = 0
         self.window = tk.Tk()
+        """self.window.update_idletasks()
+        height = self.window.winfo_height()
+
+        self.window.geometry(f"500x{height}+100+100")
+        self.window.resizable(False, True)"""
         nom_pattern, exercises = pattern_liste[i]
         self.window.title(f"{nom_pattern}- choisissez 2 exercices")
 

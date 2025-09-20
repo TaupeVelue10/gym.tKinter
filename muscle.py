@@ -26,12 +26,14 @@ def update_prioritised_growth() -> None:
     prioritised_growth += 1
     Liste_muscles[i] = (Liste_muscles[i][0], Liste_muscles[i][1], 3)
 
+
 # choix des priorités pour les muscles 
 class Muscle:
 
     def __init__(self, muscle_name, muscle_photo_path):
         self._restart = False
         self.window = tk.Tk()
+        self.window.geometry("500x500+100+100")
         """self.window.state("zoomed")"""
         self.window.title(muscle_name)
         
@@ -69,14 +71,13 @@ class Muscle:
 # controleur, quand un bouton est cliqué -> on appelle la methode create_new_window qui update self._restart comme True
 ## a chaque itération i += 1 pour changer de muscle 
 i = 0
-while True:
-    i < len(Liste_muscles)                           # ya une couille avec la boucle genre index out of range
+while i < len(Liste_muscles):                              # ya une couille avec la boucle genre index out of range
     muscle_name = Liste_muscles[i][0]
     muscle_photo_path = Liste_muscles[i][1]
     app = Muscle(muscle_name, muscle_photo_path)
     app.window.mainloop()
     
-    if app._restart and i < len(Liste_muscles):
+    if app._restart:
         i += 1
         continue
     break
