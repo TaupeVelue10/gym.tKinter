@@ -20,36 +20,29 @@ pattern_liste = [("Press horizontale", press_horizontale), ("press verticale", p
                  ("bicep isolation", bicep_iso), ("tricep isolation", tricep_iso), ("delt isolation", delt_iso)]
 
 # fonctions
-def choose_exercise(i, j):
-    # i = index du pattern, j = index de l'exercice dans ce pattern
-    nom_pattern, exercises = pattern_liste[i]
-    name, path = exercises[j][0], exercises[j][1]
-    exercises[j] = (name, path, 1) # rajoute un 1 au tuple si il est choisit
+def choose_exercise(selected_indices, i, j):
+    # Ajoute l'index sélectionné à la liste
+    if j not in selected_indices:
+        selected_indices.append(j)
 
 class Exercises:
     def __init__(self, i):
         self.i = i
         self.chosen_count = 0
+        self.selected_indices = []
         self.window = tk.Tk()
-        """self.window.update_idletasks()
-        height = self.window.winfo_height()
-
-        self.window.geometry(f"500x{height}+100+100")
-        self.window.resizable(False, True)"""
         nom_pattern, exercises = pattern_liste[i]
         self.window.title(f"{nom_pattern}- choisissez 2 exercices")
 
         self.info = tk.Label(self.window, text="Sélections : 0/2", font=("Arial", 14))
         self.info.pack(pady=8)
 
-        self._imgs = []  # garder les images en mémoire
+        self._imgs = []
 
         # un bouton par exercice
         for j in range(len(exercises)):
             name = exercises[j][0]
             path = exercises[j][1]
-
-            # image si disponible
             try:
                 img = tk.PhotoImage(file=path)
             except Exception:
@@ -69,8 +62,7 @@ class Exercises:
         tk.Button(self.window, text="Fermer", command=self.window.destroy).pack(pady=10)
 
     def on_click(self, j):
-        # choisir l'exercice, update le counter
-        choose_exercise(self.i, j)
+        choose_exercise(self.selected_indices, self.i, j)
         self.chosen_count += 1
         # config permet de changer le label existant
         self.info.config(text=f"Sélections : {self.chosen_count}/2")
@@ -79,9 +71,14 @@ class Exercises:
         if self.chosen_count >= 2:
             self.window.destroy()
 
+    def filter_exercises(self):
+        # Garde seulement les exercices sélectionnés
+        nom_pattern, exercises = pattern_liste[self.i]
+        pattern_liste[self.i] = (nom_pattern, [exercises[j] for j in self.selected_indices])
+
 for i in range(len(pattern_liste)):
     app = Exercises(i)
     app.window.mainloop()
-
+    app.filter_exercises()  # Filtrer après la sélection
 
 print(pattern_liste)
