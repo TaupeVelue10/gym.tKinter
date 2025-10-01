@@ -94,14 +94,14 @@ class Muscle:
             self.label_b_2.pack(fill="both")
         except tk.TclError:
             # Si l'image ne peut pas être chargée
-            self.label_b_1 = tk.Label(self.window, text=muscle_name, font=('Arial', 25))
+            self.label_b_1 = tk.Label(self.window, text=muscle_name, font=('Arial', 25, 'bold'))
             self.label_b_1.pack()
 
         self.button_maintenance = tk.Button(
             self.window, 
             text="Maintenance", 
-            font=('Arial', 50), 
-            fg='green', 
+            font=('Arial', 50, 'bold'),   
+            fg='black',  
             command=lambda: self.select_goal("maintenance")
         )
         self.button_maintenance.pack(padx=6, pady=6, fill="x")
@@ -109,7 +109,7 @@ class Muscle:
         self.button_normal_growth = tk.Button(
             self.window, 
             text="Normal Growth", 
-            font=('Arial', 50), 
+            font=('Arial', 50, 'bold'), 
             fg='blue', 
             command=lambda: self.select_goal("normal_growth")
         )
@@ -118,7 +118,7 @@ class Muscle:
         self.button_prioritised_growth = tk.Button(
             self.window, 
             text="Prioritised Growth", 
-            font=('Arial', 50), 
+            font=('Arial', 50, 'bold'), 
             fg='red', 
             command=lambda: self.select_goal("prioritised_growth")
         )

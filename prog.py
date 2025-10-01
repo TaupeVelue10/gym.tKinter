@@ -13,10 +13,12 @@ def create_prog(input):
     normal_growth = [7, 8, 9]
     prioritised_growth = [10, 11, 12]
     
-    # Full Body - tous les muscles dans chaque session
+    # Full Body - 2 séances différentes A et B
     full_body = Split("Full Body", {
-        "session": ["Pectoraux", "Epaules", "Dorsaux", "Biceps", "Triceps", 
-                   "Abdominaux", "Quadriceps", "Isquios-jambiers", "Fessiers", "Lombaires"]
+        "session_A": ["Pectoraux", "Epaules", "Dorsaux", "Biceps", "Triceps", 
+                     "Abdominaux", "Quadriceps", "Isquios-jambiers", "Fessiers", "Lombaires"],
+        "session_B": ["Pectoraux", "Epaules", "Dorsaux", "Biceps", "Triceps", 
+                     "Abdominaux", "Quadriceps", "Isquios-jambiers", "Fessiers", "Lombaires"]
     })
     
     # Upper/Lower Split
@@ -70,12 +72,13 @@ def generate_workout_program(nb_jours, objectifs_muscles, exercices_choisis, pat
     
     # Obtenir le split approprié
     split = create_prog(nb_jours)
+    nb_sessions = len(split.sessions)
     
-    # Calculer le volume cible pour chaque muscle (prendre le milieu de la fourchette)
-    volumes_cibles = {}
+    # Calculer le volume total hebdomadaire pour chaque muscle
+    volumes_hebdomadaires = {}
     for muscle, objectif in objectifs_muscles.items():
         volume_range = volume_objectifs[objectif]
-        volumes_cibles[muscle] = volume_range[1]  # Prendre la valeur moyenne
+        volumes_hebdomadaires[muscle] = volume_range[1]  # Prendre la valeur moyenne
     
     # Associer chaque exercice aux muscles qu'il travaille
     exercices_muscles = {}
@@ -87,60 +90,113 @@ def generate_workout_program(nb_jours, objectifs_muscles, exercices_choisis, pat
         else:
             exercices_muscles[exercice] = []
     
-    # Classer les exercices par type (polyarticulaire vs isolation)
-    exercices_poly = []
-    exercices_isolation = []
-    
+    # Classer les exercices par catégorie pour éviter les conflits
+    exercices_par_pattern = {}
     for exercice, muscles in exercices_muscles.items():
-        if len(muscles) > 1:
-            exercices_poly.append(exercice)
-        else:
-            exercices_isolation.append(exercice)
+        pattern = get_exercise_pattern(exercice)
+        if pattern not in exercices_par_pattern:
+            exercices_par_pattern[pattern] = []
+        exercices_par_pattern[pattern].append((exercice, muscles))
     
     # Générer le programme pour chaque session
     programme = {}
+    volumes_utilises = {muscle: 0 for muscle in objectifs_muscles.keys()}
     
+    # Groupes d'exercices similaires à éviter dans la même session
+    exercices_similaires = {
+        "Bench press": ["Dips"],
+        "Dips": ["Bench press"],
+        "Overhead press": ["Incline press"],
+        "Incline press": ["Overhead press"],
+        "Machine row": ["Bent over row"],
+        "Bent over row": ["Machine row"],
+        "Pull up": ["Chin up", "Lat pulldown"],
+        "Chin up": ["Pull up", "Lat pulldown"],
+        "Lat pulldown": ["Pull up", "Chin up"],
+        "Barbell squat": ["Hack squat", "Bulgarian split squat"],
+        "Hack squat": ["Barbell squat", "Bulgarian split squat"],
+        "Bulgarian split squat": ["Barbell squat", "Hack squat", "Split squat"],
+        "Split squat": ["Bulgarian split squat"],
+        "Stiff leg deadlift": ["Deadlift", "Back hyperextension"],
+        "Deadlift": ["Stiff leg deadlift", "Back hyperextension"],
+        "Back hyperextension": ["Stiff leg deadlift", "Deadlift"],
+        "Machine ab crunch": ["Sit ups", "Hanging leg raises"],
+        "Sit ups": ["Machine ab crunch", "Hanging leg raises"],
+        "Hanging leg raises": ["Machine ab crunch", "Sit ups"]
+    }
+    
+    # Répartir les exercices de manière alternée entre les sessions
+    sessions_names = list(split.sessions.keys())
+    exercices_repartis = {session: [] for session in sessions_names}
+    exercices_utilises_globalement = []
+    
+    # Grouper les exercices par pattern pour une meilleure répartition
+    for pattern, exercices_pattern in exercices_par_pattern.items():
+        exercices_du_pattern = []
+        for exercice, muscles in exercices_pattern:
+            muscles_communs = [m for m in muscles if any(m in split.sessions[s] for s in sessions_names)]
+            if muscles_communs:
+                priorite = len(muscles_communs)
+                exercices_du_pattern.append((exercice, muscles_communs, pattern, priorite))
+        
+        # Trier par priorité et alterner entre les sessions
+        exercices_du_pattern.sort(key=lambda x: x[3], reverse=True)
+        
+        for i, (exercice, muscles_communs, pattern, priorite) in enumerate(exercices_du_pattern):
+            session_index = i % len(sessions_names)
+            session_name = sessions_names[session_index]
+            exercices_repartis[session_name].append((exercice, muscles_communs, pattern, priorite))
+    
+    # Générer le programme pour chaque session
     for session_name, muscles_session in split.sessions.items():
         programme[session_name] = []
-        volumes_restants = {muscle: volumes_cibles.get(muscle, 0) for muscle in muscles_session}
+        exercices_utilises_session = []
         
-        # Ajouter d'abord les exercices polyarticulaires
-        for exercice in exercices_poly:
-            muscles_exercice = exercices_muscles[exercice]
+        # Calculer le volume cible par session pour chaque muscle
+        volumes_session = {}
+        for muscle in muscles_session:
+            if muscle in volumes_hebdomadaires:
+                volume_restant = volumes_hebdomadaires[muscle] - volumes_utilises[muscle]
+                volumes_session[muscle] = max(0, min(volume_restant, 6))  # Max 6 séries par muscle par session
+        
+        # Ajouter les exercices de cette session
+        for exercice, muscles_communs, pattern, _ in exercices_repartis[session_name]:
             # Vérifier si l'exercice travaille des muscles de cette session
-            muscles_communs = [m for m in muscles_exercice if m in muscles_session]
+            muscles_session_communs = [m for m in muscles_communs if m in muscles_session]
             
-            if muscles_communs and any(volumes_restants[m] > 0 for m in muscles_communs):
-                # Calculer le nombre de séries (entre 2 et 6)
-                volume_max_necessaire = max([volumes_restants[m] for m in muscles_communs])
-                series = min(6, max(2, volume_max_necessaire))
+            if not muscles_session_communs:
+                continue
+                
+            # Vérifier si on a encore besoin de volume pour ces muscles
+            volume_necessaire = max([volumes_session.get(m, 0) for m in muscles_session_communs])
+            
+            if volume_necessaire <= 0:
+                continue
+                
+            # Vérifier si on peut ajouter cet exercice (éviter les exercices similaires)
+            peut_ajouter = True
+            if exercice in exercices_similaires:
+                for exercice_similaire in exercices_similaires[exercice]:
+                    if exercice_similaire in exercices_utilises_session:
+                        peut_ajouter = False
+                        break
+            
+            if peut_ajouter:
+                # Calculer le nombre de séries (entre 2 et 4)
+                series = min(4, max(2, volume_necessaire))
                 
                 programme[session_name].append({
                     "exercice": exercice,
                     "series": series,
-                    "muscles": muscles_communs
+                    "muscles": muscles_session_communs
                 })
                 
-                # Réduire le volume restant pour chaque muscle travaillé
-                for muscle in muscles_communs:
-                    volumes_restants[muscle] = max(0, volumes_restants[muscle] - series)
-        
-        # Ajouter ensuite les exercices d'isolation si nécessaire
-        for exercice in exercices_isolation:
-            muscles_exercice = exercices_muscles[exercice]
-            muscles_communs = [m for m in muscles_exercice if m in muscles_session]
-            
-            if muscles_communs and any(volumes_restants[m] > 0 for m in muscles_communs):
-                muscle_cible = muscles_communs[0]  # Pour l'isolation, un seul muscle
-                series = min(6, max(2, volumes_restants[muscle_cible]))
+                exercices_utilises_session.append(exercice)
                 
-                programme[session_name].append({
-                    "exercice": exercice,
-                    "series": series,
-                    "muscles": [muscle_cible]
-                })
-                
-                volumes_restants[muscle_cible] = max(0, volumes_restants[muscle_cible] - series)
+                # Mettre à jour les volumes utilisés
+                for muscle in muscles_session_communs:
+                    volumes_utilises[muscle] += series
+                    volumes_session[muscle] = max(0, volumes_session.get(muscle, 0) - series)
     
     # Afficher le programme
     print_workout_program(programme, split.name, nb_jours)
