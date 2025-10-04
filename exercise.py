@@ -76,14 +76,8 @@ def reset_selected_exercises():
     print("🔄 Sélection d'exercices remise à zéro")
 
 def print_selected_exercises():
-    """Affiche les exercices actuellement sélectionnés"""
-    if not selected_exercises:
-        print("Aucun exercice sélectionné")
-    else:
-        print("\n🏋️ EXERCICES SÉLECTIONNÉS:")
-        for exercise in selected_exercises:
-            pattern = get_exercise_pattern(exercise)
-            print(f"  {exercise} - Pattern: {pattern}")
+    """Affiche les exercices sélectionnés par pattern et la liste complète"""
+    pass  # Fonction rendue silencieuse
 
 def print_available_exercises():
     """Affiche tous les exercices disponibles"""
@@ -201,14 +195,9 @@ def main():
             if exercise_name not in selected_exercises:
                 selected_exercises.append(exercise_name)
 
-    print("Selection des exercices terminee")
-    print("Exercices selectionnes par pattern:")
-    for nom_pattern, exercises in pattern_liste:
-        print(f"{nom_pattern}: {[ex[0] for ex in exercises]}")
-    
-    print(f"\nTotal des exercices selectionnes: {len(selected_exercises)}")
-    for exercise in selected_exercises:
-        print(f"  - {exercise}")
+    # Silencieux - plus de prints
+    # print("Selection des exercices terminee")
+    # print_selected_exercises()
 
 # Base de données des exercices avec leurs patterns de mouvement (pour compatibilité)
 EXERCISES_DB = {
@@ -273,14 +262,66 @@ def get_selected_exercises():
 
 def get_exercise_pattern(exercise_name):
     """Retourne le pattern d'un exercice donné"""
-    # D'abord chercher dans la liste des patterns sélectionnés
+    # Mapping spécifique par exercice pour éviter les confusions
+    specific_exercise_mapping = {
+        # Press horizontale
+        "Bench press": "Horizontal Push (Chest)",
+        "Dips": "Horizontal Push (Chest)",
+        
+        # Press verticale - distinction entre overhead et incline
+        "Overhead press": "Vertical Push",
+        "Incline press": "Incline Push",
+        
+        # Tirage
+        "Bent over row": "Row",
+        "Machine row": "Row",
+        "Pull up": "Vertical Pull",
+        "Chin up": "Vertical Pull",
+        "Lat pulldown": "Vertical Pull",
+        
+        # Jambes
+        "Barbell squat": "Squat",
+        "Bulgarian split squat": "Single Leg",
+        "Hack squat": "Squat",
+        "Split squat": "Single Leg",
+        "Stiff leg deadlift": "Hip Hinge",
+        "Back hyperextension": "Hip Hinge",
+        "Deadlift": "Deadlift",
+        
+        # Abdos
+        "Machine ab crunch": "Abs",
+        "Hanging leg raises": "Abs",
+        "Sit ups": "Abs",
+        
+        # Isolations
+        "Leg extension": "Leg Extension",
+        "Sissy squat": "Leg Extension",
+        "Seated leg curl": "Leg Curl",
+        "Nordic curl": "Leg Curl",
+        "Laying leg curl": "Leg Curl",
+        "Curl": "Bicep Curl",
+        "Preacher curl": "Bicep Curl",
+        "Hammer curl": "Bicep Curl",
+        "Pushdown": "Tricep Extension",
+        "Tricep extension": "Tricep Extension",
+        "Skull crushers": "Tricep Extension",
+        "Lateral raises": "Lateral Raise",
+        "Front raise": "Lateral Raise",
+        "Rear delt fly": "Rear Delt"
+    }
+    
+    # D'abord chercher dans le mapping spécifique
+    if exercise_name in specific_exercise_mapping:
+        return specific_exercise_mapping[exercise_name]
+    
+    # Sinon chercher dans la liste des patterns sélectionnés (fallback)
     for nom_pattern, exercises in pattern_liste:
         for ex_name, path in exercises:
             if ex_name == exercise_name:
-                # Convertir le nom du pattern vers la nomenclature du système
+                # Mapping générique par pattern
                 pattern_mapping = {
                     "Press horizontale": "Horizontal Push (Chest)",
-                    "press verticale": "Vertical Push", 
+                    "press verticale": "Vertical Push",  # Fallback générique
                     "tirage verticale": "Row",
                     "tirage vertical": "Vertical Pull",
                     "squat pattern": "Squat",

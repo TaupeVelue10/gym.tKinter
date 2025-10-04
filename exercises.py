@@ -21,9 +21,8 @@ pattern_liste = [("Press horizontale", press_horizontale), ("press verticale", p
 
 # fonctions
 def choose_exercise(selected_indices, i, j):
-    # Ajoute l'index sélectionné à la liste
-    if j not in selected_indices:
-        selected_indices.append(j)
+    # Ajoute l'index sélectionné à la liste, même si déjà présent
+    selected_indices.append(j)
 
 class Exercises:
     def __init__(self, i):

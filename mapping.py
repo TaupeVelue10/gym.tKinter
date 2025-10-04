@@ -1,3 +1,4 @@
+from muscle import muscle_names
 # Association pattern <-> muscles
 pattern_to_muscles = {
     "Press horizontale": ["Pectoraux", "Epaules"],
@@ -22,11 +23,6 @@ for pattern, muscles in pattern_to_muscles.items():
             muscle_to_patterns[muscle] = []
         muscle_to_patterns[muscle].append(pattern)
 
-# Liste des noms de muscles (pour correspondre à muscle.py)
-muscle_names = [
-    "Pectoraux", "Epaules", "Biceps", "Triceps", "Abdominaux", 
-    "Quadriceps", "Dorsaux", "Trapèze", "Lombaires", "Fessiers", "Isquios-jambiers"
-]
 
 # Fonction pour obtenir les patterns d'un muscle
 def get_patterns_for_muscle(muscle_name):

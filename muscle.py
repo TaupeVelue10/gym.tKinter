@@ -1,10 +1,21 @@
 import tkinter as tk
 
-# Liste des muscles disponibles
-MUSCLES = [
-    "Pectoraux", "Epaules", "Dorsaux", "Biceps", "Triceps",
-    "Abdominaux", "Quadriceps", "Isquios-jambiers", "Fessiers", "Lombaires"
+# Liste des muscles et images sous forme de tuple
+Liste_muscles = [
+    ("Pectoraux", "/Users/alexpeirano/Desktop/personal coding/tinker_project/images/jpg2png/pec1.png"), 
+    ("Epaules", "/Users/alexpeirano/Desktop/personal coding/tinker_project/images/jpg2png/epaule1.png"), 
+    ("Biceps", "/Users/alexpeirano/Desktop/personal coding/tinker_project/images/biceps.png"), 
+    ("Triceps", "/Users/alexpeirano/Desktop/personal coding/tinker_project/images/jpg2png/tricep1.png"), 
+    ("Abdominaux", "/Users/alexpeirano/Desktop/personal coding/tinker_project/images/jpg2png/ab1.png"), 
+    ("Quadriceps", "/Users/alexpeirano/Desktop/personal coding/tinker_project/images/jpg2png/quad1.png"), 
+    ("Dorsaux", "/Users/alexpeirano/Desktop/personal coding/tinker_project/images/lat1.png"), 
+    ("Lombaires", "/Users/alexpeirano/Desktop/personal coding/tinker_project/images/jpg2png/lb1.png"), 
+    ("Fessiers", "/Users/alexpeirano/Desktop/personal coding/tinker_project/images/jpg2png/glute1.png"), 
+    ("Isquios-jambiers", "/Users/alexpeirano/Desktop/personal coding/tinker_project/images/jpg2png/ham1.png")
 ]
+
+# Liste des muscles disponibles (définie à partir de Liste_muscles)
+MUSCLES = [muscle[0] for muscle in Liste_muscles]
 
 # Stockage des objectifs sélectionnés
 selected_goals = {}
@@ -19,9 +30,8 @@ def set_muscle_goal(muscle, goal):
     """
     if muscle in MUSCLES and goal in ["maintenance", "normal_growth", "prioritised_growth"]:
         selected_goals[muscle] = goal
-        print(f"✅ {muscle}: {goal}")
     else:
-        print(f"❌ Muscle ou objectif invalide: {muscle}, {goal}")
+        print(f"Muscle ou objectif invalide: {muscle}, {goal}")
 
 def get_selected_muscle_goals():
     """Retourne les objectifs sélectionnés pour tous les muscles"""
@@ -31,49 +41,21 @@ def reset_all_goals():
     """Remet à zéro tous les objectifs"""
     global selected_goals
     selected_goals = {}
-    print("🔄 Tous les objectifs ont été remis à zéro")
+    print("Tous les objectifs ont été remis à zéro")
 
 def print_current_goals():
     """Affiche les objectifs actuellement définis"""
     if not selected_goals:
         print("Aucun objectif défini")
     else:
-        print("\n🎯 OBJECTIFS ACTUELS:")
+        print("\nOBJECTIFS ACTUELS:")
         for muscle, goal in selected_goals.items():
             print(f"  {muscle}: {goal}")
-
-# Exemple d'utilisation
-def setup_example_goals():
-    """Configure des objectifs d'exemple"""
-    set_muscle_goal("Pectoraux", "normal_growth")
-    set_muscle_goal("Epaules", "maintenance")
-    set_muscle_goal("Dorsaux", "prioritised_growth")
-    set_muscle_goal("Biceps", "maintenance")
-    set_muscle_goal("Triceps", "maintenance")
-    set_muscle_goal("Quadriceps", "normal_growth")
-    set_muscle_goal("Isquios-jambiers", "maintenance")
-    set_muscle_goal("Fessiers", "normal_growth")
-    set_muscle_goal("Abdominaux", "maintenance")
-    set_muscle_goal("Lombaires", "maintenance")
 
 # Compteurs
 maintenance = 0
 normal_growth = 0
 prioritised_growth = 0
-
-# Liste des muscles et images sous forme de tuple
-Liste_muscles = [
-    ("Pectoraux", "/Users/alexpeirano/Desktop/personal coding/tinker_project/images/jpg2png/pec1.png"), 
-    ("Epaules", "/Users/alexpeirano/Desktop/personal coding/tinker_project/images/jpg2png/epaule1.png"), 
-    ("Biceps", "/Users/alexpeirano/Desktop/personal coding/tinker_project/images/biceps.png"), 
-    ("Triceps", "/Users/alexpeirano/Desktop/personal coding/tinker_project/images/jpg2png/tricep1.png"), 
-    ("Abdominaux", "/Users/alexpeirano/Desktop/personal coding/tinker_project/images/jpg2png/ab1.png"), 
-    ("Quadriceps", "/Users/alexpeirano/Desktop/personal coding/tinker_project/images/jpg2png/quad1.png"), 
-    ("Dorsaux", "/Users/alexpeirano/Desktop/personal coding/tinker_project/images/lat1.png"), 
-    ("Lombaires", "/Users/alexpeirano/Desktop/personal coding/tinker_project/images/jpg2png/lb1.png"), 
-    ("Fessiers", "/Users/alexpeirano/Desktop/personal coding/tinker_project/images/jpg2png/glute1.png"), 
-    ("Isquios-jambiers", "/Users/alexpeirano/Desktop/personal coding/tinker_project/images/jpg2png/ham1.png")
-]
 
 # Variables globales pour l'interface
 current_muscle_index = 0
@@ -149,8 +131,7 @@ def main():
     current_muscle_index = 0
     
     while current_muscle_index < len(Liste_muscles):
-        muscle_name = Liste_muscles[current_muscle_index][0]
-        muscle_photo_path = Liste_muscles[current_muscle_index][1]
+        muscle_name, muscle_photo_path = Liste_muscles[current_muscle_index]
         
         try:
             app = Muscle(muscle_name, muscle_photo_path)
@@ -165,8 +146,7 @@ def main():
             current_muscle_index += 1
             continue
     
-    print("Selection des objectifs musculaires terminee")
-    print_current_goals()
+    pass  # Selection terminée silencieusement
 
 def run_muscle_selection_gui():
     """Fonction pour compatibilité - appelle main()"""
