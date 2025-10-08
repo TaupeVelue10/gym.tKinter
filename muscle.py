@@ -1,21 +1,11 @@
 import tkinter as tk
 
-# Liste des muscles et images sous forme de tuple
-Liste_muscles = [
-    ("Pectoraux", "/Users/alexpeirano/Desktop/personal coding/tinker_project/images/jpg2png/pec1.png"), 
-    ("Epaules", "/Users/alexpeirano/Desktop/personal coding/tinker_project/images/jpg2png/epaule1.png"), 
-    ("Biceps", "/Users/alexpeirano/Desktop/personal coding/tinker_project/images/biceps.png"), 
-    ("Triceps", "/Users/alexpeirano/Desktop/personal coding/tinker_project/images/jpg2png/tricep1.png"), 
-    ("Abdominaux", "/Users/alexpeirano/Desktop/personal coding/tinker_project/images/jpg2png/ab1.png"), 
-    ("Quadriceps", "/Users/alexpeirano/Desktop/personal coding/tinker_project/images/jpg2png/quad1.png"), 
-    ("Dorsaux", "/Users/alexpeirano/Desktop/personal coding/tinker_project/images/lat1.png"), 
-    ("Lombaires", "/Users/alexpeirano/Desktop/personal coding/tinker_project/images/jpg2png/lb1.png"), 
-    ("Fessiers", "/Users/alexpeirano/Desktop/personal coding/tinker_project/images/jpg2png/glute1.png"), 
-    ("Isquios-jambiers", "/Users/alexpeirano/Desktop/personal coding/tinker_project/images/jpg2png/ham1.png")
-]
+# Utilise la base de données centralisée pour TOUT
+from exercise_database import get_all_muscles, get_muscle_info, get_muscle_list_with_images
 
-# Liste des muscles disponibles (définie à partir de Liste_muscles)
-MUSCLES = [muscle[0] for muscle in Liste_muscles]
+# Génère la liste des muscles dynamiquement depuis la base centralisée
+Liste_muscles = get_muscle_list_with_images()
+MUSCLES = get_all_muscles()
 
 # Stockage des objectifs sélectionnés
 selected_goals = {}
@@ -28,10 +18,16 @@ def set_muscle_goal(muscle, goal):
         muscle: nom du muscle
         goal: "maintenance", "normal_growth", ou "prioritised_growth"
     """
-    if muscle in MUSCLES and goal in ["maintenance", "normal_growth", "prioritised_growth"]:
+    # Récupérer les objectifs depuis la base centralisée
+    from exercise_database import VOLUME_TARGETS
+    valid_goals = list(VOLUME_TARGETS.keys())
+    
+    if muscle in MUSCLES and goal in valid_goals:
         selected_goals[muscle] = goal
     else:
         print(f"Muscle ou objectif invalide: {muscle}, {goal}")
+        print(f"Muscles disponibles: {MUSCLES}")
+        print(f"Objectifs disponibles: {valid_goals}")
 
 def get_selected_muscle_goals():
     """Retourne les objectifs sélectionnés pour tous les muscles"""

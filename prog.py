@@ -1,3 +1,4 @@
+# Programme d'entraînement - Version propre
 from muscle import get_selected_muscle_goals
 from exercise import get_selected_exercises
 from exercise_database import get_exercise_info, is_polyarticular
@@ -8,10 +9,6 @@ class Split:
         self.sessions = sessions
 
 def create_prog(input):
-    maintenance = [4, 5, 6]
-    normal_growth = [7, 8, 9,10]
-    prioritised_growth = [11, 12, 13]
-    
     # Full Body - 3 séances distinctes A, B et C
     full_body = Split("Full Body", {
         "session_A": ["Pectoraux", "Epaules", "Dorsaux", "Biceps", "Triceps", 
@@ -49,17 +46,6 @@ def create_prog(input):
     
     return prog
 
-# Fonction utilitaire pour obtenir le nom du split
-def get_split_name(input):
-    if input == 2 or input == 3:
-        return "Full Body"
-    elif input == 4 or input == 5:
-        return "Upper/Lower"
-    elif input == 6:
-        return "Push/Pull/Legs"
-
-
-# Fonction simplifiée qui utilise la base de données centralisée
 def repartir_exercices_ppl(exercices_choisis, sessions_names):
     """Répartit les exercices pour PPL en utilisant la base de données centralisée"""
     exercices_repartis = {session: [] for session in sessions_names}
@@ -81,7 +67,7 @@ def repartir_exercices_ppl(exercices_choisis, sessions_names):
             
         exercice_info = (exercice_name, info["all_muscles"], info["pattern"], info["type"])
         
-        if info["category"] == "push" or info["category"] == "core":  # Core va dans push
+        if info["category"] == "push" or info["category"] == "core":
             exercices_push.append(exercice_info)
         elif info["category"] == "pull":
             exercices_pull.append(exercice_info)
@@ -114,19 +100,10 @@ def repartir_exercices_ppl(exercices_choisis, sessions_names):
     
     return exercices_repartis
 
-
 def generate_workout_program(nb_jours, objectifs_muscles, exercices_choisis, pattern_muscles):
-    """
-    Génère un programme d'entraînement basé sur les objectifs et exercices choisis
+    """Génère un programme d'entraînement basé sur la base de données centralisée"""
     
-    Args:
-        nb_jours: nombre de jours d'entraînement (2-6)
-        objectifs_muscles: "maintenance"/"normal_growth"/"prioritised_growth" pour chaque muscle
-        exercices_choisis: list des exercices sélectionnés
-        pattern_muscles: dict qui associe chaque pattern aux muscles travaillés
-    """
-    
-    # Définir les volumes cibles (mis à jour)
+    # Volumes d'entraînement
     volume_objectifs = {
         "maintenance": [4, 5, 6],
         "normal_growth": [7, 8, 9, 10], 
@@ -146,7 +123,7 @@ def generate_workout_program(nb_jours, objectifs_muscles, exercices_choisis, pat
     programme = {}
     sessions_names = list(split.sessions.keys())
     
-    # Calculer le volume cible par session en tenant compte des répétitions
+    # Calculer le volume cible par session
     volumes_par_session = {}
     for session_name in sessions_names:
         volumes_par_session[session_name] = {}
@@ -154,26 +131,18 @@ def generate_workout_program(nb_jours, objectifs_muscles, exercices_choisis, pat
     # Calculer combien de fois chaque session sera exécutée dans la semaine
     repetitions_par_session = {}
     if split.name == "Upper/Lower" and nb_jours == 5:
-        # 5 jours: Upper A répétée 2 fois, les autres 1 fois
         for session_name in sessions_names:
             if "upper_a" in session_name.lower():
                 repetitions_par_session[session_name] = 2
             else:
                 repetitions_par_session[session_name] = 1
-    elif split.name == "Push/Pull/Legs" and nb_jours == 6:
-        # 6 jours PPL: chaque session A et B exécutée 1 fois
-        for session_name in sessions_names:
-            repetitions_par_session[session_name] = 1
     else:
-        # Cas standard: chaque session 1 fois
         for session_name in sessions_names:
             repetitions_par_session[session_name] = 1
         
     for muscle, volume_hebdo in volumes_hebdomadaires.items():
-        # Calculer le volume total nécessaire en tenant compte des répétitions
         sessions_avec_muscle = [s for s in sessions_names if muscle in split.sessions[s]]
         if sessions_avec_muscle:
-            # Volume total des répétitions
             total_repetitions = sum(repetitions_par_session[s] for s in sessions_avec_muscle)
             
             if total_repetitions > 0:
@@ -182,18 +151,55 @@ def generate_workout_program(nb_jours, objectifs_muscles, exercices_choisis, pat
                 
                 for i, session_name in enumerate(sessions_avec_muscle):
                     volumes_par_session[session_name][muscle] = volume_base_par_session
-                    # Distribuer le volume restant sur les premières sessions
                     if i < volume_restant:
                         volumes_par_session[session_name][muscle] += 1
     
     # Répartition des exercices selon le type de split
     if split.name == "Push/Pull/Legs":
         exercices_repartis = repartir_exercices_ppl(exercices_choisis, sessions_names)
-    else:
-        # Pour Full Body et Upper/Lower, répartition simple
+    elif split.name == "Upper/Lower":
+        # Répartition spéciale pour Upper/Lower
         exercices_repartis = {session: [] for session in sessions_names}
         
-        # Trier tous les exercices par priorité (polyarticulaires d'abord)
+        # Séparer les exercices par catégorie
+        exercices_upper = []
+        exercices_lower = []
+        
+        for exercice_name in exercices_choisis:
+            info = get_exercise_info(exercice_name)
+            if not info:
+                continue
+            
+            exercice_info = (exercice_name, info["all_muscles"], info["pattern"], info["type"])
+            
+            # Classer selon la catégorie
+            if info["category"] in ["push", "pull", "core"]:  # Core (abs) va dans upper
+                exercices_upper.append(exercice_info)
+            elif info["category"] == "legs":
+                exercices_lower.append(exercice_info)
+        
+        # Trier par priorité (polyarticulaires d'abord)
+        exercices_upper.sort(key=lambda x: 2 if x[3] == "polyarticulaire" else 1, reverse=True)
+        exercices_lower.sort(key=lambda x: 2 if x[3] == "polyarticulaire" else 1, reverse=True)
+        
+        # Distribuer alternativement entre A et B
+        sessions_upper = [s for s in sessions_names if 'upper' in s.lower()]
+        sessions_lower = [s for s in sessions_names if 'lower' in s.lower()]
+        
+        for i, exercice_info in enumerate(exercices_upper):
+            if sessions_upper:
+                session_index = i % len(sessions_upper)
+                exercices_repartis[sessions_upper[session_index]].append(exercice_info)
+        
+        for i, exercice_info in enumerate(exercices_lower):
+            if sessions_lower:
+                session_index = i % len(sessions_lower)
+                exercices_repartis[sessions_lower[session_index]].append(exercice_info)
+    else:
+        # Pour Full Body, répartition simple
+        exercices_repartis = {session: [] for session in sessions_names}
+        
+        # Trier tous les exercices par priorité
         exercices_avec_info = []
         for exercice_name in exercices_choisis:
             info = get_exercise_info(exercice_name)
@@ -210,56 +216,46 @@ def generate_workout_program(nb_jours, objectifs_muscles, exercices_choisis, pat
             exercices_repartis[session_name].append(exercice_info)
     
     # Déterminer l'approche selon le nombre de jours
-    approche_minimaliste = nb_jours <= 4  # 2-4 jours = minimaliste, 5-6 jours = maximaliste
-    max_exercices_par_session = 6 if not approche_minimaliste else 5  # Limite d'exercices par séance
+    approche_minimaliste = nb_jours <= 4
+    max_exercices_par_session = 5 if approche_minimaliste else 6
     
     # Générer le programme pour chaque session
     for session_name, muscles_session in split.sessions.items():
         programme[session_name] = []
-        exercices_ajoutes = 0  # Compteur d'exercices dans cette session
+        exercices_ajoutes = 0
         
-        # Utiliser les volumes pré-calculés pour cette session
         volumes_session = volumes_par_session[session_name].copy()
         
-        # Ajouter les exercices de cette session
         for exercice, muscles_communs, pattern, _ in exercices_repartis[session_name]:
-            # Vérifier la limite d'exercices par session
             if exercices_ajoutes >= max_exercices_par_session:
                 break
                 
-            # Vérifier si l'exercice travaille des muscles de cette session
             muscles_session_communs = [m for m in muscles_communs if m in muscles_session]
             
             if not muscles_session_communs:
                 continue
                 
-            # Vérifier si on a encore besoin de volume pour ces muscles
             volume_necessaire = max([volumes_session.get(m, 0) for m in muscles_session_communs])
             
             if volume_necessaire <= 0:
                 continue
-                
-            # Adapter la logique selon l'approche
+            
+            # Adapter les séries selon l'approche
             if approche_minimaliste:
-                # Minimaliste : plus de séries par exercice, moins d'exercices
-                volume_max_possible = min(4, max(3, volume_necessaire))  # 3-4 séries
+                volume_max_possible = min(4, max(3, volume_necessaire))
                 volume_min = max(3, volume_max_possible - 1)
             else:
-                # Maximaliste : moins de séries par exercice, plus d'exercices
-                volume_max_possible = min(3, max(2, volume_necessaire))  # 2-3 séries
+                volume_max_possible = min(3, max(2, volume_necessaire))
                 volume_min = max(2, volume_max_possible - 1)
             
-            # S'assurer que min <= max et que les deux sont des entiers
             volume_min = max(2, int(volume_min))
             volume_max_possible = max(volume_min, int(volume_max_possible))
             
-            # Créer l'intervalle de séries
             if volume_min == volume_max_possible:
                 series_intervalle = str(volume_min)
             else:
                 series_intervalle = f"{volume_min}-{volume_max_possible}"
             
-            # Ne montrer que le muscle principal
             muscle_principal = muscles_session_communs[0] if muscles_session_communs else ""
             
             programme[session_name].append({
@@ -268,12 +264,11 @@ def generate_workout_program(nb_jours, objectifs_muscles, exercices_choisis, pat
                 "muscles": [muscle_principal]
             })
             
-            exercices_ajoutes += 1  # Incrémenter le compteur
+            exercices_ajoutes += 1
             
             # Mettre à jour les volumes utilisés
-            series_pour_calcul = volume_min
             for muscle in muscles_session_communs:
-                volumes_session[muscle] = max(0, volumes_session.get(muscle, 0) - series_pour_calcul)
+                volumes_session[muscle] = max(0, volumes_session.get(muscle, 0) - volume_min)
     
     # Afficher le programme
     print_workout_program(programme, split.name, nb_jours)
@@ -321,15 +316,9 @@ def print_workout_program(programme, split_name, nb_jours):
     print("=" * 40)
 
 def create_complete_program(nb_jours):
-    """
-    Fonction principale qui génère un programme complet en utilisant
-    les données sélectionnées dans muscle.py et exercise.py
-    """
+    """Fonction principale utilisant la base de données centralisée"""
     
-    # Récupérer les objectifs sélectionnés pour chaque muscle
     objectifs_muscles = get_selected_muscle_goals()
-    
-    # Récupérer les exercices sélectionnés
     exercices_choisis = get_selected_exercises()
     
     if not objectifs_muscles:
@@ -344,4 +333,3 @@ def create_complete_program(nb_jours):
     programme = generate_workout_program(nb_jours, objectifs_muscles, exercices_choisis, {})
     
     return programme
-
