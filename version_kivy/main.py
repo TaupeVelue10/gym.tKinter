@@ -1,46 +1,22 @@
-"""
-Programme Principal - Generateur de Programme d'Entrainement
-Flux automatique: muscle.py -> exercise.py -> choose.py -> programme final
-"""
+from kivy.app import App
+from kivy.core.window import Window
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.label import Label
 
-def main():
-    """
-    Fonction principale - lance automatiquement le flux complet
-    """
-    # Etape 1: Selection des objectifs musculaires 
-    try:
-        import muscle
-        muscle.main()
-    except Exception as e:
-        print(f"Erreur lors de la selection des muscles: {e}")
-        return
-    
-    # Etape 2: Selection des exercices 
-    try:
-        import exercise
-        exercise.main()
-    except Exception as e:
-        print(f"Erreur lors de la selection des exercices: {e}")
-        return
-    
-    # Etape 3: Choix du nombre de jours
-    try:
-        import choose
-        nb_jours = choose.main()
-        if nb_jours is None:
-            return
-    except Exception as e:
-        print(f"Erreur lors du choix du nombre de jours: {e}")
-        return
-    
-    # Générer et print le programme
-    try:
-        from prog import create_complete_program
-        programme = create_complete_program(nb_jours)
+from muscle_screen import MuscleScreen
+
+class MainApp(App):
+    # méthode qui retourne le widget racine
+    def build(self):
+        # formzt téléphone vertical, aucun effet sur android
+        Window.size = (450, 800)
+                            #r g b alpha = transparence
+        Window.clearcolor = (0.07, 0.07, 0.1, 1)
+
+        screen = MuscleScreen()
+        return screen
+
+if __name__=="__main__":
+    MainApp().run()
         
-    except Exception as e:
-        print(f"Erreur lors de la generation du programme: {e}")
-
-if __name__ == "__main__":
-    main()
 
