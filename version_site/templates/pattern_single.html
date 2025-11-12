@@ -10,9 +10,9 @@
     .exercise { box-sizing:border-box; padding:8px; text-align:center; border-radius:8px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
     img.thumb { width:100%; height:140px; object-fit:cover; border-radius:6px; display:block; margin: 0 auto 8px; }
     .note { font-size:0.9em; color:#666 }
-    .exercise.selected { outline: 3px solid #2b8; background:#f7fff7 }
+    .exercise.selected { outline: 3px solid #0072CE; background:#E8F4FD }
     .badge { position:relative; display:inline-block; }
-    .badge .count { position:absolute; top:6px; right:6px; background:#2b8; color:#fff; font-weight:700; border-radius:10px; padding:2px 6px; font-size:12px; }
+    .badge .count { position:absolute; top:6px; right:6px; background:#0072CE; color:#fff; font-weight:700; border-radius:10px; padding:2px 6px; font-size:12px; }
     .counter { margin-top:12px; font-weight:600 }
   </style>
 </head>
@@ -20,7 +20,7 @@
   <div class="app-container">
     <header class="app-header">
       <div>
-        <div class="app-title">Tinker Gym</div>
+        <div class="app-title">MyTrainingPal</div>
         <div class="app-sub">Sélection des exercices — {{ pattern_name }}</div>
       </div>
       <div class="topbar"><a class="reset-btn" href="{{ url_for('reset') }}">Reset</a></div>

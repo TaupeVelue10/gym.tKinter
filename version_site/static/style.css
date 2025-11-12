@@ -1,35 +1,109 @@
 :root{
-  --bg:#f3f6f9;
-  --surface:#ffffff;
-  --muted:#6b7280;
-  --primary:#2aa7df; /* MyFitnessPal-like blue */
-  --accent:#0ea5a4;
+  /* MyFitnessPal Color Palette */
+  --mfp-blue:#0072CE;
+  --mfp-blue-dark:#005A9C;
+  --mfp-blue-light:#E8F4FD;
+  --mfp-green:#28A745;
+  --mfp-red:#DC3545;
+  --mfp-orange:#FF6B35;
+  --mfp-purple:#6F42C1;
+  --mfp-gray:#F5F6F8;
+  --mfp-gray-dark:#5A6268;
+  --mfp-text:#2C3E50;
+  --mfp-border:#DEE2E6;
+  
+  /* Semantic colors */
+  --bg:#F5F6F8;
+  --surface:#FFFFFF;
+  --muted:#6C757D;
+  --primary:#0072CE;
+  --primary-hover:#005A9C;
+  --accent:#0072CE;
+  --shadow:0 2px 8px rgba(0,0,0,0.08);
 }
 
-*{box-sizing:border-box}
+*{box-sizing:border-box;margin:0;padding:0}
+
 body{
-  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
   background:var(--bg);
-  color:#111827;
-  margin:0;
+  color:var(--mfp-text);
+  line-height:1.6;
   -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
 }
 
-.app-container{max-width:980px;margin:18px auto;padding:0 16px}
+.app-container{
+  max-width:1200px;
+  margin:0 auto;
+  padding:20px 16px;
+}
 
-header.app-header{display:flex;align-items:center;justify-content:space-between;padding:12px 0}
-.app-title{font-weight:700;color:var(--primary);font-size:20px}
-.app-sub{color:var(--muted);font-size:13px}
+/* Header styling - MyFitnessPal style */
+header.app-header{
+  background:var(--primary);
+  color:white;
+  padding:16px 20px;
+  margin:0 auto 24px auto;
+  max-width:1200px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  box-shadow:0 2px 4px rgba(0,0,0,0.1);
+  border-radius:8px;
+}
 
-.card{background:var(--surface);border-radius:12px;box-shadow:0 6px 18px rgba(16,24,40,0.06);padding:18px;margin:12px 0}
+.app-title{
+  font-weight:700;
+  font-size:24px;
+  color:white;
+  letter-spacing:-0.5px;
+}
 
-button.btn{background:var(--primary);color:white;border:none;padding:10px 16px;border-radius:10px;cursor:pointer;font-weight:600}
-button.btn.secondary{background:transparent;color:var(--primary);border:1px solid rgba(42,167,223,0.12)}
-button.btn:active{transform:translateY(1px)}
+.app-sub{
+  color:rgba(255,255,255,0.9);
+  font-size:14px;
+  font-weight:400;
+  margin-top:2px;
+}
 
 .topbar{position:relative}
-.reset-btn{background:transparent;color:var(--muted);border:1px solid rgba(0,0,0,0.06);padding:6px 10px;border-radius:8px;text-decoration:none}
-.reset-btn:hover{background:rgba(0,0,0,0.02)}
+
+.reset-btn{
+  background:rgba(255,255,255,0.2);
+  color:white;
+  border:1px solid rgba(255,255,255,0.3);
+  padding:8px 16px;
+  border-radius:20px;
+  text-decoration:none;
+  font-size:14px;
+  font-weight:600;
+  transition:all 0.2s ease;
+  display:inline-block;
+}
+
+.reset-btn:hover{
+  background:rgba(255,255,255,0.3);
+  transform:translateY(-1px);
+}
+
+/* Card styling - MyFitnessPal style */
+.card{
+  background:var(--surface);
+  border-radius:8px;
+  box-shadow:var(--shadow);
+  padding:24px;
+  margin:16px 0;
+  border:1px solid var(--mfp-border);
+}
+
+.card h2{
+  color:var(--mfp-text);
+  font-size:22px;
+  font-weight:700;
+  margin-bottom:20px;
+  text-align:center;
+}
 
 .center{text-align:center}
 
@@ -38,11 +112,14 @@ button.btn:active{transform:translateY(1px)}
   width:100%;
   max-width:420px;
   height:320px;
-  margin:0 auto;
+  margin:0 auto 24px;
   display:flex;
   align-items:center;
   justify-content:center;
   overflow:hidden;
+  background:var(--mfp-gray);
+  border-radius:8px;
+  border:2px solid var(--mfp-border);
 }
 
 .muscle-thumb{
@@ -52,39 +129,272 @@ button.btn:active{transform:translateY(1px)}
 }
 
 .muscle-goal-form{
-  margin-top:20px;
+  margin-top:24px;
   display:flex;
   flex-direction:column;
-  gap:10px;
-  max-width:320px;
+  gap:12px;
+  max-width:400px;
   margin-left:auto;
   margin-right:auto;
 }
 
-/* Exercise grid */
-.exercise-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;align-items:start}
-.exercise{background:var(--surface);border-radius:10px;padding:8px;text-align:center;box-shadow:0 4px 12px rgba(16,24,40,0.04)}
-.exercise .thumb{width:100%;height:140px;object-fit:cover;border-radius:8px}
-.exercise .title{margin-top:8px;font-weight:600;font-size:14px}
-.exercise.selected{outline:2px solid rgba(42,167,223,0.16)}
-
-.badge{position:relative;display:inline-block}
-.badge .count{position:absolute;top:8px;right:8px;background:var(--accent);color:white;font-weight:700;border-radius:999px;padding:4px 8px;font-size:12px;display:none;box-shadow:0 4px 10px rgba(14,165,164,0.12)}
-
-@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.18)}100%{transform:scale(1)}}
-.badge .count.pulse{animation:pulse 420ms ease-out}
-
-.counter{margin-top:12px;font-weight:700;color:var(--muted)}
-
-/* Program page styles */
-.program-day{background:var(--surface);border-radius:10px;padding:14px;margin-bottom:12px;box-shadow:0 6px 18px rgba(16,24,40,0.04)}
-.exercise-small{display:inline-block;width:140px;text-align:center;margin:8px;vertical-align:top;position:relative;background:var(--surface);border-radius:8px;padding:8px;box-shadow:0 6px 18px rgba(16,24,40,0.03)}
-.program-day-items{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-start}
-.exercise-small .thumb{width:120px;height:88px;object-fit:cover;border-radius:8px}
-
-
-/* Minimal responsive tweaks */
-@media (max-width:420px){
-  .exercise-grid{grid-template-columns:repeat(2,1fr)}
+/* Buttons - MyFitnessPal style */
+button.btn{
+  background:var(--primary);
+  color:white;
+  border:none;
+  padding:14px 24px;
+  border-radius:24px;
+  cursor:pointer;
+  font-weight:600;
+  font-size:16px;
+  transition:all 0.2s ease;
+  box-shadow:0 2px 4px rgba(0,114,206,0.2);
 }
 
+button.btn:hover{
+  background:var(--primary-hover);
+  transform:translateY(-2px);
+  box-shadow:0 4px 8px rgba(0,114,206,0.3);
+}
+
+button.btn:active{
+  transform:translateY(0);
+  box-shadow:0 2px 4px rgba(0,114,206,0.2);
+}
+
+button.btn.secondary{
+  background:white;
+  color:var(--primary);
+  border:2px solid var(--primary);
+}
+
+button.btn.secondary:hover{
+  background:var(--mfp-blue-light);
+  transform:translateY(-2px);
+}
+
+/* Progress indicator */
+.counter{
+  margin-top:16px;
+  font-weight:600;
+  color:var(--muted);
+  font-size:14px;
+}
+
+/* Exercise grid - MyFitnessPal style */
+.exercise-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:16px;
+  align-items:start;
+}
+
+.exercise{
+  background:var(--surface);
+  border-radius:8px;
+  padding:12px;
+  text-align:center;
+  border:2px solid var(--mfp-border);
+  transition:all 0.2s ease;
+  cursor:pointer;
+}
+
+.exercise:hover{
+  border-color:var(--primary);
+  transform:translateY(-2px);
+  box-shadow:0 4px 12px rgba(0,114,206,0.15);
+}
+
+.exercise.selected{
+  border-color:var(--primary);
+  background:var(--mfp-blue-light);
+  box-shadow:0 4px 12px rgba(0,114,206,0.2);
+}
+
+.exercise .thumb{
+  width:100%;
+  height:160px;
+  object-fit:cover;
+  border-radius:6px;
+  margin-bottom:10px;
+  background:var(--mfp-gray);
+}
+
+.exercise .title{
+  font-weight:600;
+  font-size:15px;
+  color:var(--mfp-text);
+  line-height:1.4;
+}
+
+/* Badge for selected count */
+.badge{
+  position:relative;
+  display:inline-block;
+}
+
+.badge .count{
+  position:absolute;
+  top:-8px;
+  right:-8px;
+  background:var(--primary);
+  color:white;
+  font-weight:700;
+  border-radius:50%;
+  width:28px;
+  height:28px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:13px;
+  box-shadow:0 2px 6px rgba(0,114,206,0.3);
+}
+
+@keyframes pulse{
+  0%{transform:scale(1)}
+  50%{transform:scale(1.15)}
+  100%{transform:scale(1)}
+}
+
+.badge .count.pulse{
+  animation:pulse 400ms ease-out;
+}
+
+/* Program page styles - MyFitnessPal style */
+.program-day{
+  background:var(--surface);
+  border-radius:8px;
+  padding:20px;
+  margin-bottom:16px;
+  box-shadow:var(--shadow);
+  border:1px solid var(--mfp-border);
+}
+
+.program-day h3{
+  color:var(--primary);
+  font-size:20px;
+  font-weight:700;
+  margin-bottom:16px;
+  padding-bottom:12px;
+  border-bottom:2px solid var(--mfp-blue-light);
+}
+
+.program-day-items{
+  display:flex;
+  flex-wrap:wrap;
+  gap:16px;
+  align-items:flex-start;
+}
+
+.exercise-small{
+  background:white;
+  border:2px solid var(--mfp-border);
+  border-radius:8px;
+  padding:12px;
+  text-align:center;
+  width:160px;
+  transition:all 0.2s ease;
+}
+
+.exercise-small:hover{
+  border-color:var(--primary);
+  transform:translateY(-2px);
+  box-shadow:0 4px 8px rgba(0,114,206,0.15);
+}
+
+.exercise-small .thumb{
+  width:100%;
+  height:100px;
+  object-fit:cover;
+  border-radius:6px;
+  margin-bottom:8px;
+  background:var(--mfp-gray);
+}
+
+.exercise-small div{
+  font-weight:600;
+  font-size:14px;
+  color:var(--mfp-text);
+  line-height:1.3;
+}
+
+/* Days selector styling */
+input[type="number"],
+select{
+  padding:12px 16px;
+  border:2px solid var(--mfp-border);
+  border-radius:8px;
+  font-size:16px;
+  font-family:inherit;
+  transition:all 0.2s ease;
+  background:white;
+}
+
+input[type="number"]:focus,
+select:focus{
+  outline:none;
+  border-color:var(--primary);
+  box-shadow:0 0 0 3px rgba(0,114,206,0.1);
+}
+
+/* Checkboxes - MyFitnessPal style */
+input[type="checkbox"]{
+  width:20px;
+  height:20px;
+  accent-color:var(--primary);
+  cursor:pointer;
+}
+
+/* Responsive design */
+@media (max-width:768px){
+  .app-container{
+    padding:16px 12px;
+  }
+  
+  header.app-header{
+    margin:0 auto 20px auto;
+    padding:14px 16px;
+  }
+  
+  .app-title{
+    font-size:20px;
+  }
+  
+  .exercise-grid{
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+  }
+  
+  .exercise-small{
+    width:100%;
+  }
+  
+  .program-day-items{
+    gap:12px;
+  }
+  
+  .muscle-image-container{
+    height:240px;
+  }
+}
+
+@media (max-width:480px){
+  .app-title{
+    font-size:18px;
+  }
+  
+  .app-sub{
+    font-size:12px;
+  }
+  
+  .reset-btn{
+    padding:6px 12px;
+    font-size:13px;
+  }
+  
+  button.btn{
+    padding:12px 20px;
+    font-size:15px;
+  }
+}

@@ -228,12 +228,13 @@ def generate():
             seen = set()
             for item in programme_by_session[session_name]:
                 name = item.get('exercice') if isinstance(item, dict) else (item[0] if isinstance(item, tuple) else str(item))
+                series = item.get('series') if isinstance(item, dict) else ''
                 if name in seen:
                     continue
                 seen.add(name)
                 info = get_exercise_info(name)
                 path = info.get('image_path') if info else None
-                exs.append((name, path))
+                exs.append((name, path, series))
             program_days[day] = exs
         else:
             program_days[day] = []

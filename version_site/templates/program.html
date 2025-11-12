@@ -9,7 +9,7 @@
   <div class="app-container">
     <header class="app-header">
       <div>
-        <div class="app-title">Tinker Gym</div>
+        <div class="app-title">MyTrainingPal</div>
         <div class="app-sub">Votre programme</div>
       </div>
       <div class="topbar"><a class="reset-btn" href="{{ url_for('muscles') }}">← Nouvelle sélection</a></div>
@@ -20,12 +20,15 @@
         <h3>Jour {{ day }}</h3>
         {% if exs %}
           <div class="program-day-items">
-          {% for name, path in exs %}
+          {% for name, path, series in exs %}
             <div class="exercise-small">
               {% if path %}
                 <img class="thumb" src="{{ url_for('media', path=path) }}" alt="{{ name }}">
               {% endif %}
               <div style="font-weight:600;margin-top:6px">{{ name }}</div>
+              {% if series %}
+                <div style="color:var(--primary);font-size:13px;margin-top:4px;font-weight:600">{{ series }} séries</div>
+              {% endif %}
             </div>
           {% endfor %}
           </div>
