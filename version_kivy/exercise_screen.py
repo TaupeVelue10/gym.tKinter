@@ -8,8 +8,6 @@ from kivy.metrics import dp
 from kivy.graphics import Color, RoundedRectangle
 from kivy.app import App
 from kivy.core.window import Window
-from kivy.cache import Cache
-from kivy.clock import Clock
 
 from exercise_database import get_exercises_by_pattern
 from exercise_database import EXERCISE_DATABASE
@@ -40,64 +38,15 @@ class ExerciseCard(ButtonBehavior, BoxLayout):
         self.bind(pos=self._update_bg, size=self._update_bg)
 
         img_path = EXERCISE_DATABASE[name].get("image_path", "")
-        print(f"[DEBUG] Exercise: {name}, Image path: {img_path}")
-        
         if img_path:
-            # Vérifier si le fichier existe
-            import os
-            if os.path.exists(img_path):
-                print(f"[DEBUG] Image file exists for {name}")
-                try:
-                    # Nettoyer le cache pour cette image en particulier
-                    Cache.remove('kv.texture', img_path)
-                    Cache.remove('kv.image', img_path)
-                    
-                    # Créer l'image avec gestion d'erreur
-                    image_widget = Image(
-                        source=img_path,
-                        allow_stretch=True,
-                        keep_ratio=True,
-                        size_hint_y=0.8
-                    )
-                    
-                    # Attendre un peu pour le chargement asynchrone
-                    def check_texture(widget, *args):
-                        if widget.texture is None:
-                            print(f"[DEBUG] Image texture still None for {name} after delay")
-                            # Retirer l'image défaillante et ajouter un label d'erreur
-                            if widget.parent:
-                                widget.parent.remove_widget(widget)
-                                widget.parent.add_widget(Label(
-                                    text="(erreur texture)",
-                                    font_size="14sp",
-                                    color=(1, 0.7, 0, 1),
-                                    size_hint_y=0.8
-                                ))
-                        else:
-                            print(f"[DEBUG] Image texture loaded successfully for {name}")
-                    
-                    # Vérifier la texture après un court délai
-                    Clock.schedule_once(lambda dt: check_texture(image_widget), 0.1)
-                    
-                    self.add_widget(image_widget)
-                except Exception as e:
-                    print(f"[DEBUG] Image loading error for {name}: {e}")
-                    self.add_widget(Label(
-                        text="(erreur chargement)",
-                        font_size="14sp",
-                        color=(1, 0.7, 0, 1),  # Orange pour erreur de chargement
-                        size_hint_y=0.8
-                    ))
-            else:
-                print(f"[DEBUG] Image file MISSING for {name}: {img_path}")
-                self.add_widget(Label(
-                    text="(image manquante)",
-                    font_size="14sp",
-                    color=(1, 0.5, 0.5, 1),  # Rouge clair pour les images manquantes
-                    size_hint_y=0.8
-                ))
+            self.add_widget(Image(
+                source=img_path,
+                allow_stretch=True,
+                keep_ratio=True,
+                size_hint_y=0.8
+            ))
+
         else:
-            print(f"[DEBUG] No image path defined for {name}")
             self.add_widget(Label(
                 text="(pas d'image)",
                 font_size="14sp",

@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Choix du nombre de jours</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="app-container">
+    <header class="app-header">
+      <div>
+        <div class="app-title">Tinker Gym</div>
+        <div class="app-sub">Combien de jours par semaine ?</div>
+      </div>
+      <div class="topbar"><a class="reset-btn" href="{{ url_for('reset') }}">Reset</a></div>
+    </header>
+
+    <div class="card center">
+      <form method="post">
+        {% for d in range(2,7) %}
+          <button class="btn" type="submit" name="days" value="{{ d }}">{{ d }} jours</button>
+        {% endfor %}
+      </form>
+    </div>
+  </div>
+</body>
+</html>

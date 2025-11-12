@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Choix exercices - {{ pattern_name }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    .center { text-align:center; margin-top:20px; }
+    .exercise-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:14px; align-items:start; max-width:980px; margin: 0 auto; }
+    .exercise { box-sizing:border-box; padding:8px; text-align:center; border-radius:8px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+    img.thumb { width:100%; height:140px; object-fit:cover; border-radius:6px; display:block; margin: 0 auto 8px; }
+    .note { font-size:0.9em; color:#666 }
+    .exercise.selected { outline: 3px solid #2b8; background:#f7fff7 }
+    .badge { position:relative; display:inline-block; }
+    .badge .count { position:absolute; top:6px; right:6px; background:#2b8; color:#fff; font-weight:700; border-radius:10px; padding:2px 6px; font-size:12px; }
+    .counter { margin-top:12px; font-weight:600 }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <header class="app-header">
+      <div>
+        <div class="app-title">Tinker Gym</div>
+        <div class="app-sub">Sélection des exercices — {{ pattern_name }}</div>
+      </div>
+      <div class="topbar"><a class="reset-btn" href="{{ url_for('reset') }}">Reset</a></div>
+    </header>
+
+    <div class="card">
+      <h2 class="center">{{ pattern_name }}</h2>
+      <p class="note center">Choisissez jusqu'à 2 exercices pour ce pattern</p>
+      <form method="post">
+        <div class="exercise-grid">
+      {% for name, path in exercises %}
+        <div class="exercise" data-idx="{{ loop.index0 }}">
+          <div class="badge">
+            {% if path %}
+              <img class="thumb" src="{{ url_for('media', path=path) }}" alt="{{ name }}">
+            {% else %}
+              <div style="height:140px;display:flex;align-items:center;justify-content:center;background:#f2f2f2;border-radius:6px;color:#888">No image</div>
+            {% endif %}
+            <span class="count" style="display:none">0</span>
+          </div>
+          <div>{{ name }}</div>
+        </div>
+      {% endfor %}
+      </div>
+
+        </div>
+
+        <div style="clear:both"></div>
+        <div class="counter center">Sélections: <span id="click-count">0</span>/2</div>
+
+      <!-- JS to register clicks (allows clicking the same exercise twice) and auto-submit after 2 selections -->
+      <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          const form = document.querySelector('form');
+          const exerciseEls = Array.from(document.querySelectorAll('.exercise'));
+          let clickCount = 0;
+          let lastClickTime = 0;
+          const hiddenContainer = document.createElement('div');
+          hiddenContainer.style.display = 'none';
+          form.appendChild(hiddenContainer);
+
+          const counterDisplay = document.getElementById('click-count');
+
+          function updateBadge(el, count) {
+            const badge = el.querySelector('.count');
+            if (!badge) return;
+            badge.textContent = count;
+            badge.style.display = count > 0 ? 'inline-block' : 'none';
+            if (count > 0) el.classList.add('selected');
+
+            // trigger a pulse animation on the badge when it changes
+            // restart animation by removing and re-adding the class
+            badge.classList.remove('pulse');
+            // force reflow so the animation restarts
+            void badge.offsetWidth;
+            badge.classList.add('pulse');
+            badge.addEventListener('animationend', function () { badge.classList.remove('pulse'); }, { once: true });
+          }
+
+          exerciseEls.forEach(function (el) {
+            const idx = el.getAttribute('data-idx');
+            el.style.cursor = 'pointer';
+            el.addEventListener('click', function (e) {
+              const now = Date.now();
+              // ignore accidental immediate double events (<150ms)
+              if (now - lastClickTime < 150) {
+                lastClickTime = now;
+                return;
+              }
+              lastClickTime = now;
+
+              // append hidden input to record this click (keeps duplicates)
+              const input = document.createElement('input');
+              input.type = 'hidden';
+              input.name = 'chosen';
+              input.value = idx;
+              hiddenContainer.appendChild(input);
+
+              clickCount += 1;
+              counterDisplay.textContent = clickCount;
+
+              // update badge count for this element
+            const badge = el.querySelector('.count');
+            const current = parseInt(badge.textContent || '0', 10) + 1;
+            updateBadge(el, current);
+
+              // disable further clicks if we've reached 2 (prevent accidental extra clicks)
+              if (clickCount >= 2) {
+                // small delay to allow UI update, then submit
+                setTimeout(function () { form.submit(); }, 120);
+                // also disable pointer events to avoid more clicks
+                exerciseEls.forEach(function(x){ x.style.pointerEvents = 'none'; });
+              }
+            });
+          });
+        });
+      </script>
+    </form>
+    <p>Pattern {{ index + 1 }} / {{ total }}</p>
+  </div>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Programme généré</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="app-container">
+    <header class="app-header">
+      <div>
+        <div class="app-title">Tinker Gym</div>
+        <div class="app-sub">Votre programme</div>
+      </div>
+      <div class="topbar"><a class="reset-btn" href="{{ url_for('muscles') }}">← Nouvelle sélection</a></div>
+    </header>
+
+    {% for day, exs in program.items() %}
+      <div class="program-day">
+        <h3>Jour {{ day }}</h3>
+        {% if exs %}
+          <div class="program-day-items">
+          {% for name, path in exs %}
+            <div class="exercise-small">
+              {% if path %}
+                <img class="thumb" src="{{ url_for('media', path=path) }}" alt="{{ name }}">
+              {% endif %}
+              <div style="font-weight:600;margin-top:6px">{{ name }}</div>
+            </div>
+          {% endfor %}
+          </div>
+        {% else %}
+          <p>Aucun exercice.</p>
+        {% endif %}
+      </div>
+    {% endfor %}
+    
+  {% if dedupe %}
+  <script>
+  // Client-side non-destructive dedupe: hide duplicate .exercise-small blocks if they share the same name text.
+  (function(){
+    try{
+      const seen = new Set();
+      const items = Array.from(document.querySelectorAll('.exercise-small'));
+      for(const it of items){
+        const nameDiv = it.querySelector('div');
+        const nm = nameDiv ? nameDiv.textContent.trim() : null;
+        if(!nm) continue;
+        if(seen.has(nm)){
+          // mark duplicate and hide
+          it.setAttribute('data-duplicate', '1');
+          it.style.display = 'none';
+        } else {
+          seen.add(nm);
+        }
+      }
+      if(seen.size && items.length > seen.size){
+        console.info('Client dedupe: removed', items.length - seen.size, 'duplicate nodes');
+      }
+    }catch(e){console.error('Client dedupe error', e)}
+  })();
+  </script>
+  {% endif %}
+  </div>
+</body>
+</html>

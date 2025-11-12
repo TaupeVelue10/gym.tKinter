@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Sélection des objectifs</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="app-container">
+    <header class="app-header">
+      <div>
+        <div class="app-title">Tinker Gym</div>
+        <div class="app-sub">Définissez vos priorités musculaires</div>
+      </div>
+      <div class="topbar"><a class="reset-btn" href="{{ url_for('reset') }}">Reset</a></div>
+    </header>
+
+    <div class="card center">
+      <h2>{{ muscle }}</h2>
+      <div class="muscle-image-container">
+        {% if img_file %}
+          <img class="muscle-thumb" src="{{ url_for('media', path=img_file) }}" alt="{{ muscle }}">
+        {% endif %}
+      </div>
+
+      <form method="post" class="muscle-goal-form">
+        <button class="btn" type="submit" name="goal" value="maintenance">Maintenance</button>
+        <button class="btn" type="submit" name="goal" value="normal_growth">Normal Growth</button>
+        <button class="btn" type="submit" name="goal" value="prioritised_growth">Prioritised Growth</button>
+      </form>
+
+      <div style="margin-top:10px;color:var(--muted)">Muscle {{ index + 1 }} / {{ total }}</div>
+    </div>
+  </div>
+</body>
+</html>
