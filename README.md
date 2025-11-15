@@ -4,9 +4,7 @@ A smart workout program generator that creates personalized training splits base
 
 ## 🌐 Live Demo
 
-**[Try it live here!](YOUR_RENDER_URL_HERE)** 🚀
-
-> Replace `YOUR_RENDER_URL_HERE` with your actual Render URL (e.g., `https://workout-program-generator.onrender.com`)
+**[Try it live here!](https://mytrainingpal.onrender.com)** 🚀
 
 ## ✨ Features
 
